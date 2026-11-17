@@ -1,0 +1,635 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Alfik · тренажёр</title>
+<meta name="description" content="Тренажёр по темам к конкурсу Alfik Matematyczny, 3 класс">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@500;700;800&display=swap" rel="stylesheet">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🧮</text></svg>">
+<style>
+:root{
+  --bg:#f6f4ee; --card:#ffffff; --ink:#1d2433; --muted:#667085; --line:#e4e1d8;
+  --accent:#2f6fde; --accent-ink:#ffffff; --accent-soft:#e7efff;
+  --ok:#1f9d55; --ok-soft:#e3f6ea; --bad:#d64545; --bad-soft:#fde8e8;
+  --hint:#fff4d6; --hint-ink:#6b4e00; --shadow:0 1px 2px rgba(20,30,50,.06),0 4px 14px rgba(20,30,50,.06);
+}
+@media (prefers-color-scheme: dark){
+  :root{
+    --bg:#14171f; --card:#1d222d; --ink:#e9edf5; --muted:#9aa4b6; --line:#2c3341;
+    --accent:#6d9cff; --accent-ink:#0d1220; --accent-soft:#22304d;
+    --ok:#4cc985; --ok-soft:#173326; --bad:#ff7a7a; --bad-soft:#3a1d22;
+    --hint:#3a3220; --hint-ink:#f3d98b; --shadow:none;
+  }
+}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{background:var(--bg);color:var(--ink);font-family:Nunito,system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;font-size:17px;line-height:1.45;-webkit-tap-highlight-color:transparent}
+button{font:inherit;color:inherit;cursor:pointer}
+.wrap{max-width:860px;margin:0 auto;padding:20px 16px 48px}
+h1{font-size:28px;line-height:1.15;margin:8px 0 6px;font-weight:800;letter-spacing:-.01em}
+.lead{color:var(--muted);margin:0 0 18px}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:12px}
+.topic{display:flex;gap:12px;align-items:flex-start;text-align:left;background:var(--card);border:1.5px solid var(--line);border-radius:16px;padding:14px;box-shadow:var(--shadow);transition:transform .08s,border-color .15s}
+.topic:hover{border-color:var(--accent)}
+.topic:active{transform:scale(.98)}
+.topic .ic{font-size:28px;line-height:1;flex:0 0 auto;margin-top:2px}
+.topic b{display:block;font-size:17px;font-weight:800}
+.topic small{display:block;color:var(--muted);font-size:13.5px;line-height:1.3;margin-top:2px}
+.topic .pr{font-size:12.5px;color:var(--muted);margin-top:6px}
+.topic .pr i{font-style:normal;color:var(--ok);font-weight:700}
+.topic.mix{grid-column:1/-1;background:var(--accent-soft);border-color:transparent}
+.foot{margin-top:22px;color:var(--muted);font-size:13.5px;display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.link{background:none;border:0;padding:0;color:var(--muted);text-decoration:underline}
+
+.bar{display:flex;align-items:center;gap:10px;margin-bottom:12px;flex-wrap:wrap}
+.back{background:var(--card);border:1.5px solid var(--line);border-radius:12px;padding:7px 12px;font-weight:700}
+.tname{font-weight:800;font-size:18px;flex:1;min-width:150px}
+.score{display:flex;gap:8px;font-weight:800;font-size:15px}
+.score span{background:var(--card);border:1.5px solid var(--line);border-radius:999px;padding:4px 10px}
+.score .s-ok{color:var(--ok)} .score .s-bad{color:var(--bad)}
+details.rule{background:var(--card);border:1.5px solid var(--line);border-radius:14px;padding:10px 14px;margin-bottom:12px}
+details.rule summary{font-weight:800;cursor:pointer}
+details.rule .rb{margin-top:8px;font-size:15.5px}
+details.rule .rb p{margin:6px 0}
+.card{background:var(--card);border:1.5px solid var(--line);border-radius:18px;padding:18px;box-shadow:var(--shadow)}
+.qmeta{display:flex;justify-content:space-between;color:var(--muted);font-size:13.5px;font-weight:700;margin-bottom:6px}
+.q{font-size:19.5px;line-height:1.5;margin:0 0 16px;font-weight:600}
+.q b{white-space:nowrap}
+.opts{display:grid;gap:9px}
+.opt{display:flex;align-items:center;gap:12px;text-align:left;background:var(--bg);border:2px solid var(--line);border-radius:14px;padding:11px 14px;font-size:18px;font-weight:700;min-height:52px}
+.opt .L{flex:0 0 30px;height:30px;border-radius:9px;display:grid;place-items:center;background:var(--card);border:1.5px solid var(--line);font-size:15px;color:var(--muted)}
+.opt:not([disabled]):hover{border-color:var(--accent)}
+.opt.ok{background:var(--ok-soft);border-color:var(--ok)}
+.opt.ok .L{background:var(--ok);border-color:var(--ok);color:#fff}
+.opt.bad{background:var(--bad-soft);border-color:var(--bad)}
+.opt.bad .L{background:var(--bad);border-color:var(--bad);color:#fff}
+.opt[disabled]{cursor:default}
+.opt.dim{opacity:.55}
+.row{display:flex;gap:10px;margin-top:14px;flex-wrap:wrap;align-items:center}
+.btn{border:0;border-radius:12px;padding:11px 18px;font-weight:800;font-size:16.5px}
+.btn.ghost{background:var(--hint);color:var(--hint-ink)}
+.btn.main{background:var(--accent);color:var(--accent-ink);margin-left:auto}
+.box{border-radius:14px;padding:12px 14px;margin-top:12px;font-size:16px}
+.box.h{background:var(--hint);color:var(--hint-ink)}
+.box.s{background:var(--bg);border:1.5px solid var(--line)}
+.verdict{font-weight:800;font-size:18px;margin:14px 0 0}
+.verdict.ok{color:var(--ok)} .verdict.bad{color:var(--bad)}
+.kbd{color:var(--muted);font-size:12.5px;margin-top:12px}
+[hidden]{display:none!important}
+@media (max-width:520px){
+  h1{font-size:24px}
+  .q{font-size:18px}
+  .card{padding:15px}
+  .btn.main{margin-left:0;flex:1}
+  .btn.ghost{flex:1}
+  .kbd{display:none}
+}
+</style>
+</head>
+<body>
+<div class="wrap" id="app"></div>
+<script>
+"use strict";
+/* ============ утилиты ============ */
+const R=(a,b)=>a+Math.floor(Math.random()*(b-a+1));
+const P=a=>a[Math.floor(Math.random()*a.length)];
+const shuffle=a=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;};
+const pl=(n,f)=>{if(n===1)return f[0];const t=n%10,h=n%100;return(t>=2&&t<=4&&!(h>=12&&h<=14))?f[1]:f[2];};
+const ru=(n,f)=>{const t=n%10,h=n%100;if(t===1&&h!==11)return f[0];if(t>=2&&t<=4&&!(h>=12&&h<=14))return f[1];return f[2];};
+const CZ=['часть','части','частей'], LAT=['rok','lata','lat'], RLET=['год','года','лет'], RDAY=['день','дня','дней'], RRAZ=['раз','раза','раз'];
+const GIRLS=['Ola','Ania','Kasia','Zosia','Basia','Ela','Julka','Hania','Lena','Maja'];
+const BOYS=['Kuba','Tomek','Staś','Bartek','Wojtek','Jaś','Filip','Antek','Olek','Kacper'];
+const KIDS=[...GIRLS,...BOYS];
+const names=(n,pool)=>shuffle(pool).slice(0,n);
+const hm=m=>{m=((m%1440)+1440)%1440;return Math.floor(m/60)+':'+String(m%60).padStart(2,'0');};
+const cap=s=>s.charAt(0).toUpperCase()+s.slice(1);
+const ITEMS=[['cukierek','cukierki','cukierków'],['naklejka','naklejki','naklejek'],['kasztan','kasztany','kasztanów'],['kulka','kulki','kulek'],['muszelka','muszelki','muszelek'],['jabłko','jabłka','jabłek']];
+
+function numOpts(correct,cands,o={}){
+  const unit=o.unit||'', min=o.min??0, max=o.max??Infinity, step=o.step||1;
+  const set=new Set([correct]);
+  for(const c of shuffle(cands)){if(set.size>=5)break;if(Number.isInteger(c)&&c>=min&&c<=max&&!set.has(c))set.add(c);}
+  let k=1;
+  while(set.size<5&&k<200){for(const c of [correct+k*step,correct-k*step]){if(set.size<5&&c>=min&&c<=max&&!set.has(c))set.add(c);}k++;}
+  const arr=[...set].sort((a,b)=>a-b);
+  const f=o.fmt||(v=>v+(unit?' '+unit:''));
+  return{opts:arr.map(f),ci:arr.indexOf(correct)};
+}
+function listOpts(list,correct){ // фиксированный порядок
+  let others=shuffle(list.filter(x=>x!==correct)).slice(0,4);
+  const keep=new Set([correct,...others]);
+  const arr=list.filter(x=>keep.has(x));
+  return{opts:arr,ci:arr.indexOf(correct)};
+}
+const mk=(q,o,hint,sol)=>({q,opts:o.opts,ci:o.ci,hint,sol});
+
+/* ============ 1. делим между двумя ============ */
+function gParts2(){
+  const it=P(ITEMS), sub=R(0,2);
+  if(sub===0){
+    const [A,B]=names(2,KIDS); const s=R(4,25), d=R(2,12), T=2*s+d, big=Math.random()<.5, ans=big?s+d:s;
+    return mk(`${A} i ${B} mają razem ${T} ${pl(T,it)}. ${A} ma o ${d} ${pl(d,it)} więcej niż ${B}. Ile ${it[2]} ma ${big?A:B}?`,
+      numOpts(ans,[s,s+d,Math.floor(T/2),T-d,d,s+2*d,Math.floor((T+d)/2)],{min:1}),
+      `Убери «лишние» ${d} у того, у кого больше. Тогда останется два одинаковых количества.`,
+      `${T} − ${d} = ${2*s} — это две равные части.<br>${2*s} : 2 = ${s}.<br>${B}: <b>${s}</b>, ${A}: ${s} + ${d} = <b>${s+d}</b>.<br>Проверка: ${s} + ${s+d} = ${T}.`);
+  }
+  if(sub===1){
+    const [A,B]=names(2,KIDS); const s=R(2,12), k=R(2,5), T=s*(k+1), big=Math.random()<.5, ans=big?s*k:s;
+    return mk(`${A} i ${B} mają razem ${T} ${pl(T,it)}. ${A} ma ${k} razy więcej ${it[2]} niż ${B}. Ile ${it[2]} ma ${big?A:B}?`,
+      numOpts(ans,[s,s*k,Math.floor(T/k),Math.floor(T/2),T-k,s+k,k],{min:1}),
+      `Пусть у ${B} — 1 часть. Тогда у ${A} — ${k} ${ru(k,CZ)}. Сколько частей всего?`,
+      `${B} — 1 часть, ${A} — ${k} ${ru(k,CZ)}. Всего ${k+1} ${ru(k+1,CZ)} = ${T}.<br>1 часть = ${T} : ${k+1} = ${s}.<br>${B}: <b>${s}</b>, ${A}: ${s} · ${k} = <b>${s*k}</b>.`);
+  }
+  const [A,B]=names(2,GIRLS); const x=R(3,15), h=R(1,6), d=2*h, a=x+d;
+  return mk(`${A} ma ${a} ${pl(a,it)}, a ${B} ma ${x} ${pl(x,it)}. Ile ${it[2]} ${A} musi oddać koleżance, żeby obie miały po tyle samo?`,
+    numOpts(h,[d,h+1,h-1,d+2,x,2*d],{min:1}),
+    `Осторожно: если отдать всю разницу, то у второй станет больше! Отдают половину разницы.`,
+    `Разница: ${a} − ${x} = ${d}.<br>Отдать нужно <b>половину разницы</b>: ${d} : 2 = <b>${h}</b>.<br>Проверка: ${a} − ${h} = ${a-h} и ${x} + ${h} = ${x+h}.`);
+}
+
+/* ============ 2. три части от целого ============ */
+function gParts3(){
+  const rule=R(1,4), x=R(2,12), a=R(2,6), k=R(2,3);
+  let p,rel,desc,c,e;
+  if(rule===1){p=[x,x+a,k*x];rel=[['o',a,0],['x',k,0]];desc=['1 часть',`1 часть + ${a}`,`${k} ${ru(k,CZ)}`];c=2+k;e=a;}
+  if(rule===2){p=[x,k*x,k*x+a];rel=[['x',k,0],['o',a,1]];desc=['1 часть',`${k} ${ru(k,CZ)}`,`${k} ${ru(k,CZ)} + ${a}`];c=1+2*k;e=a;}
+  if(rule===3){p=[x,x+a,x+2*a];rel=[['o',a,0],['o',a,1]];desc=['1 часть',`1 часть + ${a}`,`1 часть + ${a} + ${a}`];c=3;e=3*a;}
+  if(rule===4){p=[x,2*x,4*x];rel=[['x',2,0],['x',2,1]];desc=['1 часть','2 части','4 части'];c=7;e=0;}
+  const T=p[0]+p[1]+p[2], ask=R(0,2), ans=p[ask], ctx=R(0,2);
+  let q,lab,hint;
+  if(ctx===0){
+    const N=names(3,KIDS), it=P(ITEMS);
+    const ph=i=>{const[t,v,r]=rel[i-1];return t==='o'?`${N[i]} ma o ${v} ${pl(v,it)} więcej niż ${N[r]}`:`${N[i]} ma ${v} razy więcej ${it[2]} niż ${N[r]}`;};
+    q=`${N[0]}, ${N[1]} i ${N[2]} mają razem ${T} ${pl(T,it)}. ${ph(1)}, a ${ph(2)}. Ile ${it[2]} ma ${N[ask]}?`;
+    lab=N; hint=`Пусть у ${N[0]} — 1 часть. Запиши, сколько частей у каждого, и сложи.`;
+  }else{
+    const fem=ctx===2, unit=fem?'cm':'m';
+    const O=fem?['pierwsza','druga','trzecia']:['pierwszy','drugi','trzeci'];
+    const OG=fem?['pierwszej','drugiej','trzeciej']:['pierwszego','drugiego','trzeciego'];
+    const noun=fem?'część':'kawałek', dl=fem?'dłuższa':'dłuższy';
+    const ph=i=>{const[t,v,r]=rel[i-1];return t==='o'?`${O[i]} ${noun} jest o ${v} ${unit} ${dl} od ${OG[r]}`:`${O[i]} ${noun} jest ${v} razy ${dl} od ${OG[r]}`;};
+    const start=fem?`Wstążkę o długości ${T} cm pocięto na 3 części.`:`Sznurek o długości ${T} m pocięto na 3 kawałki.`;
+    q=`${start} ${cap(ph(1))}, a ${ph(2)}. Ile ${fem?'centymetrów':'metrów'} ma ${O[ask]} ${noun}?`;
+    lab=fem?['1-я часть','2-я часть','3-я часть']:['1-й кусок','2-й кусок','3-й кусок'];
+    hint=`Пусть первый ${fem?'кусок':'кусок'} — 1 часть. Нарисуй три отрезка и подпиши, сколько частей в каждом.`;
+  }
+  return mk(q,numOpts(ans,[...p,x,Math.floor(T/3),x+a,T-e,Math.floor((T-e)/2),ans+a,ans-a,2*ans],{min:1}),hint,
+    `${lab[0]} — ${desc[0]}, ${lab[1]} — ${desc[1]}, ${lab[2]} — ${desc[2]}.<br>`+
+    `Всего ${c} ${ru(c,CZ)}${e?` + ${e}`:''} = ${T}.<br>`+
+    (e?`${c} ${ru(c,CZ)} = ${T} − ${e} = ${T-e}.<br>`:'')+
+    `1 часть = ${T-e} : ${c} = ${x}.<br>Получается: ${p.join(', ')} → ответ <b>${ans}</b>.<br>Проверка: ${p.join(' + ')} = ${T}.`);
+}
+
+/* ============ 3. известна одна часть ============ */
+function gParts1(){
+  if(Math.random()<.5){
+    const p1=50*R(2,6); let p2,t2,e2;
+    const r2=P(['x','+','-']);
+    if(r2==='x'){const k=R(2,3);p2=k*p1;t2=`${k} razy więcej niż w pierwszej`;e2=`${p1} · ${k}`;}
+    if(r2==='+'){const a=50*R(1,3);p2=p1+a;t2=`o ${a} ml więcej niż w pierwszej`;e2=`${p1} + ${a}`;}
+    if(r2==='-'){const a=50*R(1,p1/50-1);p2=p1-a;t2=`o ${a} ml mniej niż w pierwszej`;e2=`${p1} − ${a}`;}
+    let r3=P(['sum','+2','-2','x1']); if(r3==='-2'&&p2<=50)r3='+2';
+    let p3,t3,e3;
+    if(r3==='sum'){p3=p1+p2;t3='tyle, ile w pierwszej i drugiej razem';e3=`${p1} + ${p2}`;}
+    if(r3==='+2'){const a=50*R(1,2);p3=p2+a;t3=`o ${a} ml więcej niż w drugiej`;e3=`${p2} + ${a}`;}
+    if(r3==='-2'){const a=50*R(1,p2/50-1);p3=p2-a;t3=`o ${a} ml mniej niż w drugiej`;e3=`${p2} − ${a}`;}
+    if(r3==='x1'){const k=R(2,3);p3=k*p1;t3=`${k} razy więcej niż w pierwszej`;e3=`${p1} · ${k}`;}
+    const S=p1+p2+p3;
+    return mk(`W pierwszej szklance jest ${p1} ml soku. W drugiej jest ${t2}, a w trzeciej ${t3}. Ile mililitrów soku jest razem we wszystkich trzech szklankach?`,
+      numOpts(S,[p1+p2,S-p1,S+50,S-50,S+100,3*p1,p2+p3],{unit:'ml',step:50,min:50}),
+      `Посчитай по очереди: сколько во 2-м стакане, потом в 3-м. Потом сложи все три.`,
+      `1-й: ${p1} ml<br>2-й: ${e2} = ${p2} ml<br>3-й: ${e3} = ${p3} ml<br>Вместе: ${p1} + ${p2} + ${p3} = <b>${S} ml</b>`);
+  }
+  const PI=['piłka','piłki','piłek'];
+  const p1=R(8,20); let p2,t2,e2;
+  const r2=P(['x','+','-']);
+  if(r2==='x'){const k=2;p2=k*p1;t2=`${k} razy więcej piłek niż w pierwszym`;e2=`${p1} · ${k}`;}
+  if(r2==='+'){const a=R(2,7);p2=p1+a;t2=`o ${a} ${pl(a,PI)} więcej niż w pierwszym`;e2=`${p1} + ${a}`;}
+  if(r2==='-'){const a=R(2,p1-3);p2=p1-a;t2=`o ${a} ${pl(a,PI)} mniej niż w pierwszym`;e2=`${p1} − ${a}`;}
+  let r3=P(['sum','+','-','x']); if(r3==='x'&&p2>15)r3='+'; if(r3==='-'&&p2<5)r3='+';
+  let p3,t3,e3;
+  if(r3==='sum'){p3=p1+p2;t3='tyle, ile w pierwszym i drugim razem';e3=`${p1} + ${p2}`;}
+  if(r3==='+'){const a=R(2,8);p3=p2+a;t3=`o ${a} ${pl(a,PI)} więcej niż w drugim`;e3=`${p2} + ${a}`;}
+  if(r3==='-'){const a=R(2,p2-2);p3=p2-a;t3=`o ${a} ${pl(a,PI)} mniej niż w drugim`;e3=`${p2} − ${a}`;}
+  if(r3==='x'){p3=2*p2;t3='2 razy więcej piłek niż w drugim';e3=`${p2} · 2`;}
+  const S=p1+p2+p3;
+  return mk(`W pierwszym koszu jest ${p1} ${pl(p1,PI)}. W drugim jest ${t2}, a w trzecim ${t3}. Ile piłek jest razem we wszystkich trzech koszach?`,
+    numOpts(S,[p1+p2,S-p1,S+2,S-2,3*p1,p2+p3,S+p1],{min:3}),
+    `Сначала узнай, сколько мячей во 2-й корзине, потом в 3-й. «Чем во втором» — значит считаем от второй корзины!`,
+    `1-я: ${p1}<br>2-я: ${e2} = ${p2}<br>3-я: ${e3} = ${p3}<br>Вместе: ${p1} + ${p2} + ${p3} = <b>${S}</b>`);
+}
+
+/* ============ 4. часы ============ */
+function gClock(){
+  const sub=R(0,4), fast=Math.random()<.5, m=P([5,10,15,20,25,30]), H=5*R(84,240);
+  const ZG=fast?'spieszy się':'spóźnia się';
+  const T={fmt:hm,step:5};
+  const ruF=fast?'спешат — показывают <b>больше</b>, чем на самом деле':'отстают — показывают <b>меньше</b>, чем на самом деле';
+  if(sub===0){
+    const ans=fast?H-m:H+m;
+    return mk(`Zegar ${ZG} o ${m} minut. Teraz pokazuje godzinę ${hm(H)}. Która jest naprawdę godzina?`,
+      numOpts(ans,[H+m,H-m,H,H+2*m,H-2*m],T),
+      `Часы ${ruF}. Значит, настоящее время ${fast?'меньше':'больше'}, чем на часах.`,
+      `Часы ${ruF}.<br>Настоящее время: ${hm(H)} ${fast?'−':'+'} ${m} min = <b>${hm(ans)}</b>.`);
+  }
+  if(sub===1){
+    const ans=fast?H+m:H-m;
+    return mk(`Zegar ${ZG} o ${m} minut. Naprawdę jest godzina ${hm(H)}. Jaką godzinę pokazuje ten zegar?`,
+      numOpts(ans,[H+m,H-m,H,H+2*m,H-2*m],T),
+      `Часы ${ruF}.`,
+      `Часы ${ruF}.<br>На часах: ${hm(H)} ${fast?'+':'−'} ${m} min = <b>${hm(ans)}</b>.`);
+  }
+  if(sub===2){
+    const n=R(2,10), now=H-n, ans=fast?now-m:now+m;
+    return mk(`Zegar ${ZG} o ${m} minut. Za ${n} ${pl(n,['minutę','minuty','minut'])} wskaże godzinę ${hm(H)}. Która jest teraz naprawdę godzina?`,
+      numOpts(ans,[now,now+m,now-m,H+m,H-m,H],T),
+      `Два шага: сначала узнай, что часы показывают <b>сейчас</b>, потом исправь на ${m} минут.`,
+      `Сейчас часы показывают ${hm(H)} − ${n} min = ${hm(now)}.<br>Часы ${ruF}, поэтому настоящее время: ${hm(now)} ${fast?'−':'+'} ${m} min = <b>${hm(ans)}</b>.`);
+  }
+  if(sub===3){
+    const r=R(1,3), n=R(2,6), T0=60*R(6,10), T1=T0+60*n, dr=r*n, ans=fast?T1+dr:T1-dr;
+    return mk(`Zegar ${ZG} o ${r} ${pl(r,['minutę','minuty','minut'])} na każdą godzinę. Nastawiono go dokładnie o ${hm(T0)}. Jaką godzinę pokaże, gdy naprawdę będzie ${hm(T1)}?`,
+      numOpts(ans,[T1+dr,T1-dr,T1,T1+r,T1-r,fast?T1+dr+r:T1-dr-r],{fmt:hm,step:r}),
+      `Сколько часов прошло с ${hm(T0)} до ${hm(T1)}? За каждый час часы ${fast?'убегают вперёд':'отстают'} на ${r} min.`,
+      `С ${hm(T0)} до ${hm(T1)} прошло ${n} ${ru(n,['час','часа','часов'])}.<br>Часы ${fast?'убегут вперёд':'отстанут'} на ${n} · ${r} = ${dr} min.<br>Покажут: ${hm(T1)} ${fast?'+':'−'} ${dr} min = <b>${hm(ans)}</b>.`);
+  }
+  const m1=P([5,10,15]), m2=P([5,10,15]), real=H-m1, ans=real-m2;
+  return mk(`Zegar w kuchni spieszy się o ${m1} minut, a zegar w pokoju spóźnia się o ${m2} minut. Zegar w kuchni pokazuje ${hm(H)}. Jaką godzinę pokazuje zegar w pokoju?`,
+    numOpts(ans,[real,H,H-m2,real+m2,H+m2,H-m1+m2],T),
+    `Сначала найди <b>настоящее</b> время по часам на кухне, а потом — что показывают часы в комнате.`,
+    `Часы на кухне спешат → настоящее время ${hm(H)} − ${m1} = ${hm(real)}.<br>Часы в комнате отстают → показывают ${hm(real)} − ${m2} = <b>${hm(ans)}</b>.`);
+}
+
+/* ============ 5. возраст ============ */
+function gAge(){
+  const sub=R(0,6);
+  if(sub===0){
+    const A=P(GIRLS), b=R(2,9), d=R(2,8), a=b+d, n=R(3,15);
+    return mk(`${A} ma ${a} ${pl(a,LAT)}, a jej brat ${b} ${pl(b,LAT)}. O ile lat ${A} będzie starsza od brata za ${n} ${pl(n,LAT)}?`,
+      numOpts(d,[d+n,n,a+n,d+1,d-1,a,b],{min:1}),
+      `Подумай: если обоим прибавить одинаковое число лет, разница изменится?`,
+      `Разница в возрасте <b>никогда не меняется</b>: через ${n} ${ru(n,RLET)} оба станут старше на ${n}.<br>${a} − ${b} = <b>${d}</b>.`);
+  }
+  if(sub===1){
+    const A=P(GIRLS), y=R(7,15), n=R(2,6), m=R(1,y-3), ans=y-m;
+    return mk(`Za ${n} ${pl(n,LAT)} ${A} będzie mieć ${y+n} ${pl(y+n,LAT)}. Ile lat miała ${A} ${m===1?'rok temu':m+' '+pl(m,LAT)+' temu'}?`,
+      numOpts(ans,[y,y+n-m,y+n+m,y-n-m,y+m,y+n],{min:1}),
+      `Сначала узнай, сколько ей лет <b>сейчас</b>.`,
+      `Сейчас: ${y+n} − ${n} = ${y}.<br>${m} ${ru(m,RLET)} назад: ${y} − ${m} = <b>${ans}</b>.`);
+  }
+  if(sub===2){
+    const g=P([{t:'Mama, tata i córka',k:3,lo:40,hi:90},{t:'Mama, tata i dwoje dzieci',k:4,lo:50,hi:100},{t:'Babcia, mama i wnuczka',k:3,lo:60,hi:110},{t:'Troje rodzeństwa',k:3,lo:12,hi:30}]);
+    const S=R(g.lo,g.hi), n=R(2,6), ans=S+g.k*n;
+    return mk(`${g.t} mają razem ${S} ${pl(S,LAT)}. Ile lat będą mieli razem za ${n} ${pl(n,LAT)}?`,
+      numOpts(ans,[S+n,S+2*n,S+(g.k+1)*n,S+(g.k-1)*n,S],{min:1}),
+      `Сколько здесь человек? Каждый из них станет старше на ${n}.`,
+      `Здесь ${g.k} ${ru(g.k,['человек','человека','человек'])}, каждый станет старше на ${n}.<br>Сумма вырастет на ${g.k} · ${n} = ${g.k*n}.<br>${S} + ${g.k*n} = <b>${ans}</b>. Ловушка — прибавить только ${n}.`);
+  }
+  if(sub===3){
+    let c,k; do{c=R(3,10);k=R(3,7);}while(c*k<22||c*k>48);
+    const S=c*(k+1), dad=Math.random()<.5, par=c*k, askPar=Math.random()<.5, ans=askPar?par:c;
+    const q=dad?`Tata jest ${k} razy starszy od córki. Razem mają ${S} ${pl(S,LAT)}. Ile lat ma ${askPar?'tata':'córka'}?`
+               :`Mama jest ${k} razy starsza od syna. Razem mają ${S} ${pl(S,LAT)}. Ile lat ma ${askPar?'mama':'syn'}?`;
+    return mk(q,numOpts(ans,[c,par,Math.floor(S/k),Math.floor(S/2),S-c,c*(k-1),S-k],{min:1}),
+      `Возраст ребёнка — 1 часть, возраст родителя — ${k} ${ru(k,CZ)}. Сколько частей вместе?`,
+      `Ребёнок — 1 часть, ${dad?'папа':'мама'} — ${k} ${ru(k,CZ)}. Всего ${k+1} ${ru(k+1,CZ)} = ${S}.<br>1 часть = ${S} : ${k+1} = ${c}.<br>Ребёнку ${c}, ${dad?'папе':'маме'} ${c} · ${k} = ${par}. Ответ: <b>${ans}</b>.`);
+  }
+  if(sub===4){
+    const k=P([3,4,5]), rng={3:[10,16],4:[7,11],5:[5,8]}[k], s1=R(rng[0],rng[1]), diff=(k-1)*s1, s0=s1-R(1,Math.min(8,s1-1)), f0=s0+diff, ans=s1-s0;
+    return mk(`Tata ma ${f0} ${pl(f0,LAT)}, a syn ${s0} ${pl(s0,LAT)}. Za ile lat tata będzie ${k} razy starszy od syna?`,
+      numOpts(ans,[s1,diff,k,ans+k,Math.floor(f0/k)],{min:1}),
+      `Разница в возрасте не меняется: ${f0} − ${s0} = ${diff}. Когда папа в ${k} ${ru(k,RRAZ)} старше, эта разница равна ${k-1} возрастам сына.`,
+      `Разница всегда ${f0} − ${s0} = ${diff} ${ru(diff,RLET)}.<br>Папа в ${k} ${ru(k,RRAZ)} старше → разница = ${k-1} ${ru(k-1,['возраст','возраста','возрастов'])} сына → сыну будет ${diff} : ${k-1} = ${s1}, папе ${s1*k}.<br>Сейчас сыну ${s0} → через ${s1} − ${s0} = <b>${ans}</b> ${ru(ans,RLET)}.`);
+  }
+  if(sub===5){
+    let c,k; do{c=R(5,12);k=R(3,5);}while(c*k<22||c*k>48);
+    const S=c*(k+1), ans=c*k-c;
+    return mk(`Mama jest teraz ${k} razy starsza od córki. Razem mają ${S} ${pl(S,LAT)}. Ile lat miała mama, gdy urodziła się córka?`,
+      numOpts(ans,[c*k,c,S-c,Math.floor(S/2),c*(k+1)],{min:1}),
+      `Сначала найди, сколько лет каждой сейчас (метод частей). А когда дочь родилась, ей было 0 лет.`,
+      `Дочь — 1 часть, мама — ${k} ${ru(k,CZ)}, всего ${k+1} ${ru(k+1,CZ)} = ${S}, 1 часть = ${c}.<br>Дочери ${c}, маме ${c*k}.<br>Когда дочь родилась (${c} ${ru(c,RLET)} назад), маме было ${c*k} − ${c} = <b>${ans}</b>.`);
+  }
+  const M=R(26,40), c=R(3,10), ans=2*M-c;
+  return mk(`Mama ma ${M} ${pl(M,LAT)}, a córka ${c} ${pl(c,LAT)}. Ile lat będzie miała mama, gdy córka będzie miała tyle lat, ile mama ma teraz?`,
+    numOpts(ans,[M+c,2*M,M,2*M-2*c,M-c],{min:1}),
+    `Мама старше дочери на ${M} − ${c} = ${M-c} лет — всегда.`,
+    `Мама старше на ${M} − ${c} = ${M-c} ${ru(M-c,RLET)}.<br>Когда дочери будет ${M}, маме будет ${M} + ${M-c} = <b>${ans}</b>.`);
+}
+
+/* ============ 6. время и календарь ============ */
+const DAYS=['poniedziałek','wtorek','środa','czwartek','piątek','sobota','niedziela'];
+const DAYS_ACC=['w poniedziałek','we wtorek','w środę','w czwartek','w piątek','w sobotę','w niedzielę'];
+const DAYS_RU=['понедельник','вторник','среда','четверг','пятница','суббота','воскресенье'];
+const MON=['styczeń','luty','marzec','kwiecień','maj','czerwiec','lipiec','sierpień','wrzesień','październik','listopad','grudzień'];
+const MON_G=['stycznia','lutego','marca','kwietnia','maja','czerwca','lipca','sierpnia','września','października','listopada','grudnia'];
+const MLEN=[31,28,31,30,31,30,31,31,30,31,30,31];
+function dayOpts(ci,list){const r=R(0,4),start=(ci-r+7)%7,arr=[];for(let i=0;i<5;i++)arr.push((start+i)%7);return{opts:arr.map(i=>list[i]),ci:arr.indexOf(ci)};}
+function gTime(){
+  const sub=R(0,4);
+  if(sub===0){
+    const d=R(0,6), N=R(8,100), fut=Math.random()<.6, r=N%7, w=Math.floor(N/7), ans=fut?(d+r)%7:(d-r+7)%7;
+    return mk(`Dziś jest ${DAYS[d]}. Jaki dzień tygodnia ${fut?`będzie za ${N} dni`:`był ${N} dni temu`}?`,
+      dayOpts(ans,DAYS),
+      `Через каждые 7 дней — тот же день недели. Выбрось целые недели и посчитай только остаток.`,
+      `${N} = ${w} · 7 + ${r} → ${w} ${ru(w,['неделя','недели','недель'])} (тот же день) и ещё ${r} ${ru(r,RDAY)}.<br>`+
+      (r===0?`Остатка нет — снова <b>${DAYS[d]}</b>.`:`${DAYS[d]} ${fut?'+':'−'} ${r} ${ru(r,RDAY)} → <b>${DAYS[ans]}</b>.`));
+  }
+  if(sub===1){
+    const mo=R(0,10);
+    const d=R(0,6), len=MLEN[mo], r=len-28, ans=(d+r)%7;
+    return mk(`W pewnym roku 1 ${MON_G[mo]} wypadł ${DAYS_ACC[d]}.${mo===1?' Rok nie jest przestępny.':''} W jakim dniu tygodnia wypadł 1 ${MON_G[mo+1]}?`,
+      dayOpts(ans,DAYS_ACC),
+      `Сколько дней в этом месяце? 28 дней — это ровно 4 недели.`,
+      `В месяце ${MON[mo]} ${len} ${ru(len,RDAY)} = 4 недели + ${r} ${ru(r,RDAY)}.<br>`+(r===0?`Остатка нет → тот же день: <b>${DAYS[ans]}</b>.`:`${DAYS_RU[d]} + ${r} → <b>${DAYS[ans]}</b> (${DAYS_RU[ans]}).`));
+  }
+  if(sub===2){
+    const t=R(0,5);
+    if(t===0){const h=R(2,6),a=60*h;return mk(`Ile minut jest w ${h} godzinach?`,numOpts(a,[100*h,10*h,a+60,a-60,30*h,24*h],{min:1}),`В 1 часе 60 минут.`,`${h} · 60 = <b>${a}</b>.`);}
+    if(t===1){const k=R(2,8),a=15*k;return mk(`Ile minut jest w ${k} kwadransach?`,numOpts(a,[a+15,a-15,10*k,25*k,4*k,60*k],{min:1}),`Kwadrans — четверть часа, это 15 минут.`,`${k} · 15 = <b>${a}</b>.`);}
+    if(t===2){const d=R(2,5),a=24*d;return mk(`Ile godzin jest w ${d} dobach?`,numOpts(a,[12*d,a+24,a-24,60*d,20*d,7*d],{min:1}),`Doba — сутки, это 24 часа.`,`${d} · 24 = <b>${a}</b>.`);}
+    if(t===3){const m=R(2,10),a=60*m;return mk(`Ile sekund jest w ${m} minutach?`,numOpts(a,[100*m,10*m,a+60,a-60,m+60],{min:1}),`В 1 минуте 60 секунд.`,`${m} · 60 = <b>${a}</b>.`);}
+    if(t===4){const w=R(2,9),a=7*w;return mk(`Ile dni jest w ${w} tygodniach?`,numOpts(a,[5*w,a+7,a-7,10*w,w+7],{min:1}),`В неделе 7 дней.`,`${w} · 7 = <b>${a}</b>.`);}
+    const h=R(2,6),a=4*h;return mk(`Ile kwadransów jest w ${h} godzinach?`,numOpts(a,[15*h,2*h,a+4,a-4,60*h,a+1],{min:1}),`Сколько кварт (по 15 минут) в одном часе?`,`В часе 4 кварты: ${h} · 4 = <b>${a}</b>.`);
+  }
+  if(sub===3){
+    const S=60*R(7,18)+5*R(0,11), D=5*R(7,40), E=S+D;
+    if(Math.random()<.5){
+      return mk(`Film zaczął się o ${hm(S)} i trwał ${D} minut. O której godzinie się skończył?`,
+        numOpts(E,[E+10,E-10,E+60,E-60,E+30,E-30],{fmt:hm,step:5}),
+        `Сначала посчитай, сколько это часов и минут: в часе 60 минут.`,
+        (D<60?`${hm(S)} + ${D} min = <b>${hm(E)}</b>.`:`${D} min = ${Math.floor(D/60)} h ${D%60} min.<br>${hm(S)} + ${Math.floor(D/60)} h ${D%60} min = <b>${hm(E)}</b>.`));
+    }
+    const toN=m=>Math.floor(m/60)*100+m%60, naive=toN(E)-toN(S);
+    return mk(`Ile minut minęło od godziny ${hm(S)} do godziny ${hm(E)}?`,
+      numOpts(D,[naive,D+10,D-10,D+60,D-60,D+40],{min:5,step:5}),
+      `Посчитай до ближайшего целого часа, потом целые часы, потом оставшиеся минуты. Нельзя просто вычесть числа: в часе 60 минут, а не 100!`,
+      (D<60?`От ${hm(S)} до ${hm(E)}: <b>${D}</b> min.`:`От ${hm(S)} до ${hm(E)}: ${Math.floor(D/60)} h ${D%60} min = ${Math.floor(D/60)} · 60 + ${D%60} = <b>${D}</b> min.`));
+  }
+  const t=R(0,4);
+  if(t===0){return mk('Ile dni ma rok przestępny?',numOpts(366,[365,364,360,367,370]),`Rok przestępny — високосный.`,`В високосном году <b>366</b> дней: в феврале появляется 29-е число.`);}
+  if(t===1){return mk('Ile dni ma luty w roku przestępnym?',numOpts(29,[28,30,31,27]),`Обычно в феврале 28 дней.`,`В високосном году в феврале <b>29</b> дней.`);}
+  if(t===2){const base=R(2025,2040),yrs=[];for(let y=base;yrs.length<4;y++)if(y%4)yrs.push(y);let ly=base;while(ly%4)ly++;const all=[...yrs,ly].sort((a,b)=>a-b);
+    return mk('Który z tych lat jest przestępny?',{opts:all.map(String),ci:all.indexOf(ly)},`Високосный год делится на 4 без остатка.`,`${ly} : 4 = ${ly/4} — делится без остатка, значит год <b>${ly}</b> високосный.`);}
+  if(t===3){let a,b;do{a=R(0,11);b=R(0,11);}while(a===b||a===1||b===1);const s=MLEN[a]+MLEN[b];
+    return mk(`Ile dni mają razem ${MON[a]} i ${MON[b]}?`,numOpts(s,[60,61,62,59,63],{min:58}),`По 31 дню: styczeń, marzec, maj, lipiec, sierpień, październik, grudzień. По 30: kwiecień, czerwiec, wrzesień, listopad.`,`${MON[a]} — ${MLEN[a]}, ${MON[b]} — ${MLEN[b]}. Вместе <b>${s}</b>.`);}
+  return mk('Ile miesięcy w roku ma dokładnie 30 dni?',numOpts(4,[3,5,6,7,2]),`Вспомни «кулачки» или стишок про месяцы.`,`30 дней: kwiecień, czerwiec, wrzesień, listopad — <b>4</b> месяца.`);
+}
+
+/* ============ 7. единицы ============ */
+function gUnits(){
+  const t=R(0,9);
+  if(t===0){const a=R(1,5),b=R(1,99),ans=100*a+b;return mk(`Ile dekagramów to ${a} kg ${b} dag?`,numOpts(ans,[10*a+b,1000*a+b,Number(`${a}${b}`),100*a+10*b,100*a],{unit:'dag',min:1}),`1 kg = 100 dag.`,`${a} kg = ${100*a} dag, плюс ${b} dag: ${100*a} + ${b} = <b>${ans} dag</b>.`);}
+  if(t===1){const n=R(2,95),ans=10*n;return mk(`Ile gramów to ${n} dag?`,numOpts(ans,[n,100*n,n+10,1000*n,ans+10],{unit:'g',min:1}),`1 dag = 10 g.`,`${n} · 10 = <b>${ans} g</b>. Из dag в g — дописываем ноль.`);}
+  if(t===2){const ans=R(2,99),g=10*ans;return mk(`Ile dekagramów to ${g} g?`,numOpts(ans,[g,10*g,ans+10,ans-1,ans*100],{unit:'dag',min:1}),`10 g = 1 dag.`,`${g} : 10 = <b>${ans} dag</b>. Из g в dag — убираем ноль.`);}
+  if(t===3){const B=P([{q:'Ile dekagramów to pół kilograma?',a:50,c:[5,500,25,100,250],u:'dag',s:'1 kg = 100 dag, половина — 50 dag.'},{q:'Ile gramów to pół kilograma?',a:500,c:[50,5,250,1000,100],u:'g',s:'1 kg = 1000 g, половина — 500 g.'},{q:'Ile dekagramów to ćwierć kilograma?',a:25,c:[250,4,50,40,75],u:'dag',s:'1 kg = 100 dag, четверть — 100 : 4 = 25 dag.'},{q:'Ile gramów to ćwierć kilograma?',a:250,c:[25,400,500,40,750],u:'g',s:'1 kg = 1000 g, четверть — 1000 : 4 = 250 g.'},{q:'Ile dekagramów ma kilogram?',a:100,c:[10,1000,50,60,500],u:'dag',s:'1 kg = 100 dag.'},{q:'Ile gramów ma dekagram?',a:10,c:[100,1000,1,5,50],u:'g',s:'1 dag = 10 g.'},{q:'Ile kilogramów ma tona?',a:1000,c:[100,10,500,10000,60],u:'kg',s:'1 t = 1000 kg.'}]);
+    return mk(B.q,numOpts(B.a,B.c,{unit:B.u,min:1}),`Помни: 1 kg = 100 dag = 1000 g.`,B.s.replace(/(\d+ (dag|g|kg))\.$/,'<b>$1</b>.'));}
+  if(t===4){const a=R(1,9),b=R(1,99),ans=100*a+b;return mk(`Ile centymetrów to ${a} m ${b} cm?`,numOpts(ans,[Number(`${a}${b}`),10*a+b,1000*a+b,100*a+10*b,100*a],{unit:'cm',min:1}),`1 m = 100 cm.`,`${a} m = ${100*a} cm, плюс ${b} cm: <b>${ans} cm</b>.`);}
+  if(t===5){const a=R(1,30),b=R(1,9),ans=10*a+b;return mk(`Ile milimetrów to ${a} cm ${b} mm?`,numOpts(ans,[a+b,100*a+b,10*b+a,10*a,ans+10],{unit:'mm',min:1}),`1 cm = 10 mm.`,`${a} cm = ${10*a} mm, плюс ${b} mm: <b>${ans} mm</b>.`);}
+  if(t===6){const n=R(2,9),ans=1000*n;return mk(`Ile metrów to ${n} km?`,numOpts(ans,[100*n,10*n,10000*n,ans+100,ans+1000],{unit:'m',min:1,step:100}),`1 km = 1000 m.`,`${n} · 1000 = <b>${ans} m</b>.`);}
+  if(t===7){const n=R(2,9),ans=1000*n;return mk(`Ile mililitrów to ${n} ${pl(n,['litr','litry','litrów'])}?`,numOpts(ans,[100*n,10*n,10000*n,ans+100,ans+1000],{unit:'ml',min:1,step:100}),`1 l = 1000 ml.`,`${n} · 1000 = <b>${ans} ml</b>.`);}
+  if(t===8){const n=R(1,4),s=P([250,200,500]),ans=1000*n/s;return mk(`Ile szklanek po ${s} ml można napełnić wodą z ${n} ${n===1?'litra':'litrów'}?`,numOpts(ans,[ans+1,ans-1,ans*2,n*s/100,ans+2],{min:1}),`1 l = 1000 ml. Сколько стаканов по ${s} ml в одном литре?`,`В 1 l: 1000 : ${s} = ${1000/s} ${ru(1000/s,['стакан','стакана','стаканов'])}.<br>В ${n} l: ${n} · ${1000/s} = <b>${ans}</b>.`);}
+  const a=R(1,9),b=R(1,99),ans=100*a+b;return mk(`Ile groszy to ${a} zł ${b} gr?`,numOpts(ans,[Number(`${a}${b}`),10*a+b,1000*a+b,100*a+10*b,100*a],{unit:'gr',min:1}),`1 zł = 100 gr.`,`${a} zł = ${100*a} gr, плюс ${b} gr: <b>${ans} gr</b>.`);
+}
+
+/* ============ 8. периметр ============ */
+function gPerim(){
+  const t=R(0,6);
+  if(t===0){const a=R(2,15),ans=4*a;return mk(`Kwadrat ma bok długości ${a} cm. Ile wynosi jego obwód?`,numOpts(ans,[2*a,a*a,a+4,3*a,8*a],{unit:'cm',min:1}),`У квадрата 4 одинаковые стороны.`,`Obwód = 4 · ${a} = <b>${ans} cm</b>.`);}
+  if(t===1){const a=R(3,15),b=R(2,a-1),ans=2*(a+b);return mk(`Prostokąt ma boki długości ${a} cm i ${b} cm. Ile wynosi jego obwód?`,numOpts(ans,[a+b,a*b,2*a+b,a+2*b,4*a],{unit:'cm',min:1}),`У прямоугольника 4 стороны: две по ${a} и две по ${b}.`,`Obwód = 2 · (${a} + ${b}) = 2 · ${a+b} = <b>${ans} cm</b>.<br>Ловушка — ${a+b} (сложили только две стороны).`);}
+  if(t===2){const a=R(2,15),Pp=4*a;return mk(`Obwód kwadratu wynosi ${Pp} cm. Jaką długość ma jego bok?`,numOpts(a,[Pp/2,Pp-4,a+2,2*a,a-1],{unit:'cm',min:1}),`Периметр — это 4 одинаковые стороны.`,`${Pp} : 4 = <b>${a} cm</b>.`);}
+  if(t===3){const a=R(3,15),b=R(2,14),Pp=2*(a+b);return mk(`Prostokąt ma obwód ${Pp} cm, a jeden z jego boków ma ${a} cm. Jaką długość ma drugi bok?`,numOpts(b,[Pp-a,Pp/2,Pp-2*a,Pp/2+a,b+a],{unit:'cm',min:1}),`Половина периметра = одна длина + одна ширина.`,`Половина периметра: ${Pp} : 2 = ${Pp/2}.<br>${Pp/2} − ${a} = <b>${b} cm</b>.`);}
+  if(t===4){let s1,s2,s3;do{s1=R(2,12);s2=R(2,12);s3=R(2,12);}while(s3>=s1+s2||s1>=s2+s3||s2>=s1+s3);const ans=s1+s2+s3;
+    return mk(`Trójkąt ma boki długości ${s1} cm, ${s2} cm i ${s3} cm. Ile wynosi jego obwód?`,numOpts(ans,[s1+s2,s2+s3,ans+1,ans-1,2*ans,ans+2],{unit:'cm',min:1}),`Сложи все три стороны.`,`${s1} + ${s2} + ${s3} = <b>${ans} cm</b>.`);}
+  if(t===5){const f=P([['trójkąta','треугольника',3],['kwadratu','квадрата',4],['pięciokąta','пятиугольника',5],['sześciokąta','шестиугольника',6]]),a=R(2,9),ans=f[2]*a;
+    return mk(`Każdy bok ${f[0]} ma długość ${a} cm. Ile wynosi obwód tej figury?`,numOpts(ans,[ans+a,ans-a,a+f[2],2*a],{unit:'cm',min:1}),`Сколько сторон у ${f[1]}?`,`У ${f[1]} ${f[2]} ${ru(f[2],['сторона','стороны','сторон'])}: ${f[2]} · ${a} = <b>${ans} cm</b>.`);}
+  const a=R(3,12),Pp=4*a,c=R(a+1,Pp/2-1),ans=Pp/2-c;
+  return mk(`Z drutu zrobiono kwadrat o boku ${a} cm. Potem ten sam drut wyprostowano i zrobiono z niego prostokąt, którego jeden bok ma ${c} cm. Jaką długość ma drugi bok prostokąta?`,
+    numOpts(ans,[a,Pp-c,Pp/2,c-a,ans+1],{unit:'cm',min:1}),`Проволока та же — значит периметр тот же.`,`Периметр квадрата: 4 · ${a} = ${Pp} cm — у прямоугольника такой же.<br>Половина: ${Pp/2}. ${Pp/2} − ${c} = <b>${ans} cm</b>.`);
+}
+
+/* ============ 9. фигуры и тела ============ */
+const SOL=[{n:'sześcian',r:'куб',s:6,k:12,w:8},{n:'prostopadłościan',r:'прямоугольный параллелепипед («коробка»)',s:6,k:12,w:8},{n:'ostrosłup czworokątny',r:'пирамида с квадратным основанием',s:5,k:8,w:5},{n:'ostrosłup trójkątny',r:'треугольная пирамида',s:4,k:6,w:4},{n:'graniastosłup trójkątny',r:'треугольная призма («палатка»)',s:5,k:9,w:6}];
+const SNAMES=['kula','walec','stożek','sześcian','prostopadłościan','ostrosłup'];
+function gShapes(){
+  const t=R(0,4);
+  if(t===0){const S=P(SOL),at=P([['ścian','s','граней'],['krawędzi','k','рёбер'],['wierzchołków','w','вершин']]),ans=S[at[1]];
+    return mk(`Ile ${at[0]} ma ${S.n}?`,numOpts(ans,[S.s,S.k,S.w,ans+1,ans-1,ans+2],{min:1}),`${cap(S.n)} — это ${S.r}. Представь его и посчитай.`,
+      `${cap(S.n)} (${S.r}): ${S.s} граней (ściany), ${S.k} рёбер (krawędzie), ${S.w} вершин (wierzchołki).<br>Ответ: <b>${ans}</b> ${at[2]}.`);}
+  if(t===1){const o=P([['piłki','kula','шар'],['puszki','walec','цилиндр'],['rożka do lodów','stożek','конус'],['kostki do gry','sześcian','куб'],['pudełka po butach','prostopadłościan','прямоугольный параллелепипед'],['cegły','prostopadłościan','прямоугольный параллелепипед'],['piramidy egipskiej','ostrosłup','пирамида'],['globusa','kula','шар'],['czapki urodzinowej','stożek','конус']]);
+    return mk(`Jak nazywa się bryła, która ma kształt ${o[0]}?`,listOpts(SNAMES,o[1]),`kula — шар, walec — цилиндр, stożek — конус, sześcian — куб, prostopadłościan — «коробка», ostrosłup — пирамида.`,`Это <b>${o[1]}</b> — ${o[2]}.`);}
+  if(t===2){const f=P([['trójkąt',3],['czworokąt',4],['pięciokąt',5],['sześciokąt',6],['ośmiokąt',8]]),w=P([['boków','сторон'],['wierzchołków','вершин'],['kątów','углов']]);
+    return mk(`Ile ${w[0]} ma ${f[0]}?`,numOpts(f[1],[3,4,5,6,8,10],{min:3}),`Название подсказывает: trój- = 3, pięcio- = 5, sześcio- = 6, ośmio- = 8.`,`${cap(f[0])}: ${f[1]} ${ru(f[1],['сторона','стороны','сторон'])}, ${f[1]} ${ru(f[1],['вершина','вершины','вершин'])} и ${f[1]} ${ru(f[1],['угол','угла','углов'])}. Ответ: <b>${f[1]}</b>.`);}
+  if(t===3){const x=R(1,6),ans=7-x,others=shuffle([1,2,3,4,5,6].filter(v=>v!==ans)).slice(0,4),arr=[ans,...others].sort((a,b)=>a-b);
+    return mk(`Na górnej ściance kostki do gry widać ${x} ${pl(x,['oczko','oczka','oczek'])}. Ile oczek jest na dolnej ściance?`,{opts:arr.map(String),ci:arr.indexOf(ans)},`На противоположных гранях кубика сумма всегда одна и та же.`,`Сумма точек на противоположных гранях = 7.<br>7 − ${x} = <b>${ans}</b>.`);}
+  const B=P([
+    {q:'Ile stopni ma kąt prosty?',n:90,c:[45,60,100,180,360],s:'Прямой угол = <b>90°</b> (как уголок тетради).',h:'Kąt prosty — прямой угол.'},
+    {q:'Ile kątów prostych ma prostokąt?',n:4,c:[0,1,2,3,5],s:'У прямоугольника <b>все 4</b> угла прямые.',h:'Вспомни уголки листа бумаги.'},
+    {q:'Z ilu kwadratów składa się siatka sześcianu?',n:6,c:[4,5,8,12],s:'У куба 6 граней → развёртка из <b>6</b> квадратов.',h:'Siatka — развёртка. Сколько граней у куба?'},
+    {q:'Jak nazywa się odcinek, który łączy dwa przeciwległe wierzchołki kwadratu?',l:['bok','przekątna','krawędź','obwód','wierzchołek'],a:'przekątna',s:'<b>Przekątna</b> — диагональ.',h:'Он идёт «наискосок» через фигуру.'},
+    {q:'Jak nazywa się płaska część bryły, np. jedna ścianka kostki?',l:['ściana','krawędź','wierzchołek','przekątna','obwód'],a:'ściana',s:'<b>Ściana</b> — грань («стенка»).',h:'По-русски — грань.'},
+    {q:'Jak nazywa się odcinek, w którym spotykają się dwie ściany bryły?',l:['ściana','krawędź','wierzchołek','przekątna','bok'],a:'krawędź',s:'<b>Krawędź</b> — ребро.',h:'По-русски — ребро.'},
+    {q:'Jak nazywa się punkt, w którym spotykają się krawędzie bryły?',l:['ściana','krawędź','wierzchołek','przekątna','podstawa'],a:'wierzchołek',s:'<b>Wierzchołek</b> — вершина («уголок»).',h:'По-русски — вершина.'},
+    {q:'Która bryła ma dokładnie jeden wierzchołek?',l:SNAMES,a:'stożek',s:'У конуса (<b>stożek</b>) одна вершина — «носик».',h:'Подумай о рожке мороженого.'},
+    {q:'Która bryła nie ma ani ścian płaskich, ani wierzchołków?',l:SNAMES,a:'kula',s:'<b>Kula</b> (шар) вся круглая.',h:'Как мяч.'},
+    {q:'Jak nazywa się kąt mniejszy od kąta prostego?',l:['kąt prosty','kąt ostry','kąt rozwarty','kąt pełny','kąt półpełny'],a:'kąt ostry',s:'<b>Kąt ostry</b> — острый (меньше 90°), rozwarty — тупой (больше 90°).',h:'Острый, как кончик карандаша.'},
+  ]);
+  if(B.l)return mk(B.q,listOpts(B.l,B.a),B.h,B.s);
+  return mk(B.q,numOpts(B.n,B.c),B.h,B.s);
+}
+
+/* ============ 10. названия в действиях ============ */
+function gTerms(){
+  const t=R(0,3);
+  if(t===0){
+    const op=R(0,3); let ex,map,list;
+    if(op===0){let b,c;do{b=R(2,9);c=R(2,9);}while(b===c||b*c===b||b*c===c);const a=b*c;ex=`${a} : ${b} = ${c}`;map=[[a,'dzielna','делимое'],[b,'dzielnik','делитель'],[c,'iloraz','частное']];list=['dzielna','dzielnik','iloraz','iloczyn','czynnik'];}
+    if(op===1){let b,c;do{b=R(2,9);c=R(2,9);}while(b===c);const a=b*c;ex=`${b} · ${c} = ${a}`;map=[[b,'czynnik','множитель'],[c,'czynnik','множитель'],[a,'iloczyn','произведение']];list=['czynnik','iloczyn','iloraz','dzielna','suma'];}
+    if(op===2){let b,c;do{b=R(5,60);c=R(5,40);}while(b===c);const a=b+c;ex=`${b} + ${c} = ${a}`;map=[[b,'składnik','слагаемое'],[c,'składnik','слагаемое'],[a,'suma','сумма']];list=['składnik','suma','różnica','iloczyn','odjemna'];}
+    if(op===3){let a,b;do{a=R(20,99);b=R(5,a-5);}while(b===a-b);const c=a-b;ex=`${a} − ${b} = ${c}`;map=[[a,'odjemna','уменьшаемое'],[b,'odjemnik','вычитаемое'],[c,'różnica','разность']];list=['odjemna','odjemnik','różnica','suma','składnik'];}
+    const pick=P(map);
+    return mk(`W działaniu <b>${ex}</b> liczba ${pick[0]} to:`,listOpts(list,pick[1]),`Вспомни таблицу названий: dzielna : dzielnik = iloraz, czynnik · czynnik = iloczyn, składnik + składnik = suma, odjemna − odjemnik = różnica.`,
+      map.map(m=>`${m[0]} — <b>${m[1]}</b> (${m[2]})`).join('<br>'));
+  }
+  if(t===1){
+    const nm=P(['suma','różnica','iloczyn','iloraz']); let x,y,ans;
+    if(nm==='iloraz'){y=R(2,9);ans=R(2,9);x=y*ans;}else{x=R(3,12);y=R(2,9);if(x<y)[x,y]=[y,x];if(x===y)x++;ans={suma:x+y,'różnica':x-y,iloczyn:x*y}[nm];}
+    const all=[x+y,x-y,x*y,Number.isInteger(x/y)?x/y:null].filter(v=>v!==null);
+    const RU={suma:'сложения',różnica:'вычитания',iloczyn:'умножения',iloraz:'деления'}, SG={suma:'+',różnica:'−',iloczyn:'·',iloraz:':'};
+    return mk(`Ile wynosi ${nm} liczb ${x} i ${y}?`,numOpts(ans,[...all,ans+1,ans-1],{min:0}),`${cap(nm)} — это результат ${RU[nm]}.`,
+      `${cap(nm)} — результат ${RU[nm]}: ${x} ${SG[nm]} ${y} = <b>${ans}</b>.`);
+  }
+  if(t===2){
+    const x=R(2,9),k=R(2,9),X=x*k;
+    if(Math.random()<.5)return mk(`Ile razy liczba ${X} jest większa od liczby ${x}?`,numOpts(k,[X-x,X+x,k+1,k-1,x],{min:1}),`«Во сколько раз» — это деление.`,`${X} : ${x} = <b>${k}</b>.`);
+    return mk(`O ile liczba ${X} jest większa od liczby ${x}?`,numOpts(X-x,[k,X+x,X-x+1,X-x-1,x],{min:1}),`«На сколько больше» — это вычитание.`,`${X} − ${x} = <b>${X-x}</b>.`);
+  }
+  const x=R(3,12),k=R(2,6),v=R(0,3);
+  if(v===0)return mk(`Jaka liczba jest ${k} razy większa od ${x}?`,numOpts(k*x,[x+k,k*x+x,k*x-x,x-k,k*x+1],{min:1}),`«${k} razy większa» — умножаем.`,`${x} · ${k} = <b>${k*x}</b>.`);
+  if(v===1)return mk(`Jaka liczba jest o ${k} większa od ${x}?`,numOpts(x+k,[k*x,x-k,x+k+1,x+k-1,x+2*k],{min:1}),`«o ${k} większa» — прибавляем.`,`${x} + ${k} = <b>${x+k}</b>.`);
+  if(v===2){const X=x*k;return mk(`Jaka liczba jest ${k} razy mniejsza od ${X}?`,numOpts(x,[X-k,X+k,X*k,x+1,x-1],{min:1}),`«${k} razy mniejsza» — делим.`,`${X} : ${k} = <b>${x}</b>.`);}
+  const X=x+R(5,30);return mk(`Jaka liczba jest o ${k} mniejsza od ${X}?`,numOpts(X-k,[X+k,X-k+1,X-k-1,X-2*k,k],{min:1}),`«o ${k} mniejsza» — вычитаем.`,`${X} − ${k} = <b>${X-k}</b>.`);
+}
+
+/* ============ 11. головы и ноги ============ */
+function gLegs(){
+  const pr=P([
+    {a:['kury','kur','кур','куры'],al:2,b:['krowy','krów','коров'],bl:4,place:'Na łące pasą się'},
+    {a:['kaczki','kaczek','уток','утки'],al:2,b:['króliki','królików','кроликов'],bl:4,place:'Na podwórku są'},
+    {a:['kury','kur','кур','куры'],al:2,b:['owce','owiec','овец'],bl:4,place:'Na farmie są'},
+    {a:['chrząszcze','chrząszczy','жуков','жуки'],al:6,b:['pająki','pająków','пауков'],bl:8,place:'W pudełku są'},
+  ]);
+  const y=R(2,8),x=R(2,8),H=x+y,L=pr.al*y+pr.bl*x,askB=Math.random()<.5,ans=askB?x:y,extra=L-H*pr.al,dl=pr.bl-pr.al;
+  return mk(`${pr.place} ${pr.a[0]} i ${pr.b[0]}. Mają razem ${H} ${pl(H,['głowę','głowy','głów'])} i ${L} ${pl(L,['nogę','nogi','nóg'])}. Ile jest ${askB?pr.b[1]:pr.a[1]}?`,
+    numOpts(ans,[askB?y:x,H,Math.floor(L/pr.bl),Math.floor(L/(pr.al+pr.bl)),ans+1,ans-1],{min:1}),
+    `Представь, что все ${H} — это ${pr.a[3]} (по ${pr.al} ${ru(pr.al,['нога','ноги','ног'])}). Сколько ног тогда было бы? Сколько ног «лишних»?`,
+    `Если бы все ${H} были ${pr.a[3]}: ${H} · ${pr.al} = ${H*pr.al} ${ru(H*pr.al,['нога','ноги','ног'])}.<br>Лишние ноги: ${L} − ${H*pr.al} = ${extra}.<br>Каждое животное с ${pr.bl} ногами добавляет ещё ${dl} ${ru(dl,['ногу','ноги','ног'])} → ${pr.b[2]}: ${extra} : ${dl} = ${x}.<br>${cap(pr.a[2])}: ${H} − ${x} = ${y}. Ответ: <b>${ans}</b>.`);
+}
+
+/* ============ 12. забор, распилы, очередь ============ */
+function gFence(){
+  const t=R(0,4);
+  if(t===0){const d=R(2,6),s=R(3,10),L=d*s;
+    return mk(`Wzdłuż ścieżki o długości ${L} m co ${d} m posadzono drzewa, także na początku i na końcu ścieżki. Ile drzew posadzono?`,numOpts(s+1,[s,s-1,s+2,L,L/2|0],{min:1}),`Нарисуй маленький пример: дорожка из 2 промежутков — сколько деревьев?`,`Промежутков: ${L} : ${d} = ${s}.<br>Деревьев на 1 больше, чем промежутков: ${s} + 1 = <b>${s+1}</b>.`);}
+  if(t===1){const n=R(3,9),m=R(2,6),ans=(n-1)*m;
+    return mk(`Belkę trzeba pociąć na ${n} ${pl(n,['kawałek','kawałki','kawałków'])}. Jedno cięcie trwa ${m} ${pl(m,['minutę','minuty','minut'])}. Ile minut potrwa pocięcie całej belki?`,numOpts(ans,[n*m,(n+1)*m,n-1,(n-2)*m,ans+1],{min:1}),`Сколько распилов нужно, чтобы получить 2 куска? А 3?`,`Распилов на 1 меньше, чем кусков: ${n} − 1 = ${n-1}.<br>${n-1} · ${m} = <b>${ans}</b> min.`);}
+  if(t===2){const INS={Kuba:'Kubą',Tomek:'Tomkiem',Staś:'Stasiem',Bartek:'Bartkiem',Wojtek:'Wojtkiem',Jaś:'Jasiem',Filip:'Filipem',Antek:'Antkiem',Olek:'Olkiem',Kacper:'Kacprem'};
+    const A=P(BOYS),a=R(2,12),b=R(2,12),ans=a+b+1,st=n=>pl(n,['stoi','stoją','stoi']),os=n=>pl(n,['osoba','osoby','osób']);
+    return mk(`W kolejce przed ${INS[A]} ${st(a)} ${a} ${os(a)}, a za nim ${st(b)} ${b} ${os(b)}. Ile osób stoi w tej kolejce?`,
+      numOpts(ans,[a+b,a+b+2,a+b-1,a*b],{min:1}),`Не забудь посчитать самого мальчика!`,`${a} (до него) + 1 (он сам) + ${b} (после него) = <b>${ans}</b>.`);}
+  if(t===3){const A=P(GIRLS),k=R(2,12),m=R(2,12),ans=k+m-1;
+    return mk(`Dzieci stoją w rzędzie. ${A} jest ${k}. od lewej strony i ${m}. od prawej strony. Ile dzieci stoi w rzędzie?`,numOpts(ans,[k+m,k+m+1,k+m-2,k*m],{min:1}),`Сколько детей слева от неё? А справа?`,`Слева от неё ${k-1}, справа ${m-1}, плюс она сама:<br>${k-1} + ${m-1} + 1 = <b>${ans}</b>. Ловушка — ${k+m} (её посчитали дважды).`);}
+  const f=R(1,3),per=P([10,12,15,16,18,20]),from=1,to=from+f,s=per*f,n=R(to+1,6),ans=n*per;
+  return mk(`W bloku wszystkie piętra mają tyle samo schodów. Z ${from}. piętra na ${to}. piętro prowadzi ${s} ${pl(s,['stopień','stopnie','stopni'])}. Ile stopni prowadzi z parteru na ${n}. piętro?`,
+    numOpts(ans,[(n+1)*per,(n-1)*per,Math.round(s/to)*n,s*n,n*Math.round(s/(to-1+1))],{min:1}),`Считай не этажи, а <b>пролёты</b> между ними. С 1-го на ${to}-й — сколько пролётов?`,
+    `С ${from}-го на ${to}-й этаж — ${f} ${ru(f,['пролёт','пролёта','пролётов'])}, в каждом ${s} : ${f} = ${per} ступенек.<br>С партера на ${n}-й — ${n} пролётов: ${n} · ${per} = <b>${ans}</b>.`);
+}
+
+/* ============ 13. римские цифры ============ */
+function toRoman(n){const v=[[50,'L'],[40,'XL'],[10,'X'],[9,'IX'],[5,'V'],[4,'IV'],[1,'I']];let s='';for(const[a,r]of v)while(n>=a){s+=r;n-=a;}return s;}
+function gRoman(){
+  const t=R(0,2), n=R(4,49);
+  const trap=[n-1,n+1,n+2,n-2,n+10,n-10,(n%10===4||n%10===9)?n+2:n+5];
+  if(t===0)return mk(`Jak zapisać liczbę ${n} cyframi rzymskimi?`,numOpts(n,trap,{min:1,max:49,fmt:toRoman}),`I = 1, V = 5, X = 10, L = 50. Меньшая цифра перед большей — вычитается (IV = 4, IX = 9).`,`${n} = ${Math.floor(n/10)*10||''}${n>=10&&n%10?' + ':''}${n%10||''} → <b>${toRoman(n)}</b>.`);
+  if(t===1)return mk(`Jaką liczbę oznacza zapis <b>${toRoman(n)}</b>?`,numOpts(n,trap,{min:1}),`I = 1, V = 5, X = 10, L = 50. IV = 4, IX = 9, XL = 40.`,`<b>${toRoman(n)}</b> = ${n}.`);
+  const a=R(2,30),b=R(2,49-a),add=Math.random()<.6,s=add?a+b:Math.max(a,b)-Math.min(a,b),x=add?a:Math.max(a,b),y=add?b:Math.min(a,b);
+  return mk(`Ile wynosi <b>${toRoman(x)} ${add?'+':'−'} ${toRoman(y)}</b>?`,numOpts(s,[s+1,s-1,s+10,s-10,s+2],{min:1,max:49,fmt:toRoman}),`Переведи в обычные числа, посчитай и переведи обратно.`,`${toRoman(x)} = ${x}, ${toRoman(y)} = ${y}. ${x} ${add?'+':'−'} ${y} = ${s} = <b>${toRoman(s)}</b>.`);
+}
+
+/* ============ темы ============ */
+const TOPICS=[
+ {id:'parts2',ic:'🍬',name:'Делим между двумя',sub:'на N больше · в N раз · поровну',gen:gParts2,rule:`<p><b>«На N больше»:</b> из суммы убираем N, остаток делим пополам — это меньшее. Большее = меньшее + N.</p><p><b>«В N раз больше»:</b> меньшее — 1 часть, большее — N частей. Сумму делим на (N + 1) частей.</p><p><b>Уравнять:</b> отдают <b>половину</b> разницы.</p>`},
+ {id:'parts3',ic:'✂️',name:'Три части от целого',sub:'шнурок, ленточка, конфеты',gen:gParts3,rule:`<p>Самое маленькое — <b>1 часть</b>. «В 2 раза больше» — 2 части. «На 4 больше» — та же часть + 4.</p><p>Из целого <b>убираем все «+»</b>, остаток делим на число частей — получаем 1 часть. Потом находим, что спросили.</p><p>Удобно нарисовать три отрезка.</p>`},
+ {id:'parts1',ic:'🥛',name:'Известна одна часть',sub:'стаканы, корзины — найти сумму',gen:gParts1,rule:`<p>Считаем части <b>по очереди</b>, начиная с известной, потом складываем все.</p><p>Внимательно читай: «чем в <b>первом</b>» или «чем во <b>втором</b>».</p>`},
+ {id:'clock',ic:'⏰',name:'Часы спешат и отстают',sub:'spieszy się · spóźnia się',gen:gClock,rule:`<p><b>Spieszy się</b> (спешат) — показывают <b>больше</b>. Настоящее время = на часах − спешка.</p><p><b>Spóźnia się</b> (отстают) — показывают <b>меньше</b>. Настоящее время = на часах + отставание.</p><p>Если двое часов — сначала найди <b>настоящее</b> время.</p>`},
+ {id:'age',ic:'🎂',name:'Возраст',sub:'разница, сумма, «во сколько раз»',gen:gAge,rule:`<p><b>Разница в возрасте никогда не меняется.</b></p><p>Через N лет каждый из K человек станет старше на N → сумма вырастет на K · N.</p><p>«В 4 раза старше» → разница = 3 возраста младшего.</p>`},
+ {id:'time',ic:'📅',name:'Время и календарь',sub:'kwadrans, doba, дни недели, rok przestępny',gen:gTime,rule:`<p>doba = 24 h · godzina = 60 min · kwadrans = 15 min · minuta = 60 s · tydzień = 7 dni.</p><p>Через 7, 14, 21… дней — тот же день недели. Выбрасываем целые недели, считаем остаток.</p><p>Rok przestępny — 366 дней, в феврале 29. Год делится на 4.</p>`},
+ {id:'units',ic:'⚖️',name:'Единицы измерения',sub:'g · dag · kg · cm · m · ml · gr',gen:gUnits,rule:`<p>1 kg = 100 dag = 1000 g · 1 dag = 10 g · ½ kg = 50 dag.</p><p>1 m = 100 cm · 1 cm = 10 mm · 1 km = 1000 m.</p><p>1 l = 1000 ml · 1 zł = 100 gr.</p><p>Ловушка: 2 m 5 cm = <b>205</b> cm, а не 25.</p>`},
+ {id:'perim',ic:'📐',name:'Периметр',sub:'obwód квадрата, прямоугольника',gen:gPerim,rule:`<p><b>Obwód</b> — сумма всех сторон.</p><p>Квадрат: 4 · сторона. Прямоугольник: 2 · (длина + ширина).</p><p>Обратно: сторона квадрата = периметр : 4; вторая сторона прямоугольника = периметр : 2 − первая.</p>`},
+ {id:'shapes',ic:'🧊',name:'Фигуры и тела',sub:'ściany, krawędzie, wierzchołki',gen:gShapes,rule:`<p><b>ściana</b> — грань · <b>krawędź</b> — ребро · <b>wierzchołek</b> — вершина · <b>przekątna</b> — диагональ.</p><p>Куб и «коробка»: 6 граней, 12 рёбер, 8 вершин. Пирамида с квадратом внизу: 5 граней, 8 рёбер, 5 вершин.</p><p>kula — шар · walec — цилиндр · stożek — конус · ostrosłup — пирамида.</p>`},
+ {id:'terms',ic:'➗',name:'Названия в действиях',sub:'iloczyn, iloraz, dzielna…',gen:gTerms,rule:`<p>składnik + składnik = <b>suma</b></p><p>odjemna − odjemnik = <b>różnica</b></p><p>czynnik · czynnik = <b>iloczyn</b></p><p>dzielna : dzielnik = <b>iloraz</b></p><p>«o 5 więcej» → +5 · «5 razy więcej» → ·5</p>`},
+ {id:'legs',ic:'🐔',name:'Головы и ноги',sub:'куры и кролики, пауки и жуки',gen:gLegs,rule:`<p>Представь, что все животные — те, у кого <b>меньше ног</b>. Посчитай, сколько тогда было бы ног.</p><p>Лишние ноги делим на разницу в ногах — получаем количество «многоногих».</p>`},
+ {id:'fence',ic:'🌳',name:'Забор, распилы, очередь',sub:'и лестница на этажи',gen:gFence,rule:`<p>Деревья с двух концов: деревьев на 1 <b>больше</b>, чем промежутков.</p><p>Распилы: распилов на 1 <b>меньше</b>, чем кусков.</p><p>Очередь: до + я + после. «k-й слева и m-й справа» → k + m − 1.</p><p>Лестница: считаем пролёты. С 1-го на 3-й этаж — 2 пролёта.</p>`},
+ {id:'roman',ic:'🏛️',name:'Римские цифры',sub:'I, V, X, L',gen:gRoman,rule:`<p>I = 1 · V = 5 · X = 10 · L = 50.</p><p>Меньшая цифра <b>перед</b> большей — вычитаем (IV = 4, IX = 9, XL = 40), <b>после</b> — прибавляем (VI = 6, XI = 11).</p>`},
+];
+const MIX={id:'mix',ic:'🎲',name:'Всё вперемешку',sub:'случайные задачи из всех тем — как на тесте',rule:''};
+
+if(typeof window!=='undefined')window.__ALFIK__={TOPICS,toRoman};
+</script>
+<script>
+"use strict";
+(function(){
+if(typeof document==='undefined')return;
+const {TOPICS}=window.__ALFIK__;
+const MIXT={id:'mix',ic:'🎲',name:'Всё вперемешку',sub:'случайные задачи из всех тем — как на тесте'};
+const KEY='alfik-trener-v1';
+let store={};
+try{store=JSON.parse(localStorage.getItem(KEY)||'{}')||{};}catch(e){store={};}
+const save=()=>{try{localStorage.setItem(KEY,JSON.stringify(store));}catch(e){}};
+const app=document.getElementById('app');
+let S=null; // текущая сессия
+const LET='ABCDE';
+
+function home(){
+  S=null;
+  const card=t=>{const st=store[t.id]||{n:0,ok:0};const pr=st.n?`Решено: ${st.n} · верно <i>${Math.round(100*st.ok/st.n)}%</i>`:'Ещё не решали';
+    return `<button class="topic${t.id==='mix'?' mix':''}" data-t="${t.id}"><span class="ic">${t.ic}</span><span><b>${t.name}</b><small>${t.sub}</small><span class="pr">${pr}</span></span></button>`;};
+  app.innerHTML=`<h1>Alfik · тренажёр</h1><p class="lead">Выбери тему и решай задачи. Задачи — на польском, как в тесте; подсказки и решения — на русском. Задачи каждый раз новые.</p>
+  <div class="grid">${card(MIXT)}${TOPICS.map(card).join('')}</div>
+  <div class="foot"><span>Alfik Matematyczny · 3 класс</span><button class="link" id="reset">Сбросить статистику</button></div>`;
+  app.querySelectorAll('.topic').forEach(b=>b.onclick=()=>start(b.dataset.t));
+  document.getElementById('reset').onclick=()=>{if(confirmReset()){store={};save();home();}};
+  window.scrollTo(0,0);
+}
+let resetArmed=false;
+function confirmReset(){const b=document.getElementById('reset');if(resetArmed){resetArmed=false;return true;}resetArmed=true;b.textContent='Точно сбросить? Нажми ещё раз';setTimeout(()=>{resetArmed=false;if(b.isConnected)b.textContent='Сбросить статистику';},3000);return false;}
+
+function start(id){
+  const t=id==='mix'?MIXT:TOPICS.find(x=>x.id===id);
+  S={t,ok:0,bad:0,streak:0,num:0};
+  next();
+}
+function newProblem(){
+  for(let i=0;i<20;i++){
+    const src=S.t.id==='mix'?TOPICS[Math.floor(Math.random()*TOPICS.length)]:S.t;
+    try{const p=src.gen();if(p&&p.opts&&p.opts.length===5&&p.ci>=0){p.src=src;return p;}}catch(e){console.error(e);}
+  }
+  return null;
+}
+function next(){
+  S.num++; S.p=newProblem(); S.done=false;
+  const p=S.p, t=S.t;
+  app.innerHTML=`
+  <div class="bar"><button class="back" id="back">← Темы</button><div class="tname">${t.ic} ${t.name}</div>
+    <div class="score"><span class="s-ok" title="Верно">✔ ${S.ok}</span><span class="s-bad" title="Ошибки">✘ ${S.bad}</span><span title="Серия">🔥 ${S.streak}</span></div></div>
+  ${t.id!=='mix'?`<details class="rule"><summary>📌 Как решать</summary><div class="rb">${t.rule}</div></details>`:''}
+  <div class="card">
+    <div class="qmeta"><span>Задача ${S.num}</span><span>${t.id==='mix'?p.src.ic+' '+p.src.name:''}</span></div>
+    <p class="q">${p.q}</p>
+    <div class="opts">${p.opts.map((o,i)=>`<button class="opt" data-i="${i}"><span class="L">${LET[i]}</span><span>${o}</span></button>`).join('')}</div>
+    <div class="box h" id="hint" hidden>💡 ${p.hint}</div>
+    <p class="verdict" id="verdict" hidden></p>
+    <div class="box s" id="sol" hidden></div>
+    <div class="row"><button class="btn ghost" id="hb">💡 Подсказка</button><button class="btn main" id="nb" hidden>Дальше →</button></div>
+    <div class="kbd">Клавиши: 1–5 или A–E — ответ, H — подсказка, Enter — дальше</div>
+  </div>`;
+  document.getElementById('back').onclick=home;
+  document.getElementById('hb').onclick=showHint;
+  document.getElementById('nb').onclick=next;
+  app.querySelectorAll('.opt').forEach(b=>b.onclick=()=>answer(+b.dataset.i));
+  window.scrollTo(0,0);
+}
+function showHint(){const h=document.getElementById('hint');if(h)h.hidden=false;const hb=document.getElementById('hb');if(hb)hb.hidden=true;S.hinted=true;}
+function answer(i){
+  if(S.done)return; S.done=true;
+  const p=S.p, ok=i===p.ci;
+  app.querySelectorAll('.opt').forEach((b,j)=>{b.disabled=true;if(j===p.ci)b.classList.add('ok');else if(j===i)b.classList.add('bad');else b.classList.add('dim');});
+  if(ok){S.ok++;S.streak++;}else{S.bad++;S.streak=0;}
+  const ids=[S.t.id]; if(S.t.id==='mix')ids.push(p.src.id);
+  for(const id of ids){const st=store[id]||{n:0,ok:0};st.n++;if(ok)st.ok++;store[id]=st;}
+  save();
+  const v=document.getElementById('verdict');v.hidden=false;
+  const praise=['Верно! 🎉','Правильно! 👍','Отлично! ⭐','Молодец! 🎯','Так держать! 🚀'];
+  v.className='verdict '+(ok?'ok':'bad');
+  v.textContent=ok?praise[Math.floor(Math.random()*praise.length)]+(S.streak>=3?`  Серия: ${S.streak}`:''):`Не совсем. Правильный ответ — ${LET[p.ci]}.`;
+  const sol=document.getElementById('sol');sol.hidden=false;sol.innerHTML='<b>Решение.</b><br>'+p.sol;
+  document.getElementById('hb').hidden=true;
+  const nb=document.getElementById('nb');nb.hidden=false;nb.focus({preventScroll:true});
+  const sc=app.querySelector('.score');sc.innerHTML=`<span class="s-ok">✔ ${S.ok}</span><span class="s-bad">✘ ${S.bad}</span><span>🔥 ${S.streak}</span>`;
+}
+document.addEventListener('keydown',e=>{
+  if(!S||e.metaKey||e.ctrlKey||e.altKey)return;
+  const k=e.key.toLowerCase();
+  if(!S.done){
+    let i='12345'.indexOf(k); if(i<0)i='abcde'.indexOf(k);
+    if(i>=0){answer(i);e.preventDefault();return;}
+    if(k==='h'){showHint();return;}
+  }else if(k==='enter'||k===' '){next();e.preventDefault();}
+});
+home();
+})();
+</script>
+</body>
+</html>
